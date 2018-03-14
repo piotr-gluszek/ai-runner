@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 enum Direction
 {
     Up,
@@ -56,6 +57,10 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log(collision.gameObject.name);
+        if (collision.gameObject.name == "FinishLine")
+        {
+            SceneManager.LoadScene("Success");
+        }
         //Destroy(collision.gameObject);
     }
 
