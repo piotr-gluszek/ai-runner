@@ -20,11 +20,11 @@ public class Player : MonoBehaviour
     Animator animator;
     public float[] inp;
     public Text inputText;
-    Collider col;
+    BoxCollider2D col;
 
     void Start()
     {
-        col = GetComponent<Collider>();
+        col = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         SetUpInputsDisplay();
     }
@@ -41,7 +41,8 @@ public class Player : MonoBehaviour
     private void CheckDistance()
     {
 
-        Vector3 offset =new Vector3(0,(float)0.5, 0);
+        Vector2 offsetY = col.size.y * transform.localScale/2;
+        Vector3 offset =new Vector3(0,(float)offsetY.y, 0);
         offset = transform.rotation * offset ;
         // Set up a raycast hit for knowing what we hit
         RaycastHit2D hit;
