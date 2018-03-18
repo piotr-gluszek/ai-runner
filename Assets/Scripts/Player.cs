@@ -87,31 +87,24 @@ public class Player : MonoBehaviour
 
     void DetectMovement()
     {
-
-
-
         animator.speed = 1;
-        if (Input.GetKey(KeyCode.W))
+
+
+        transform.Translate(0, speed / 2 * Time.deltaTime, 0);
+        animator.SetInteger("direction", (int)Direction.Up);
+        if (Input.GetKey(KeyCode.A))
         {
-            transform.Translate(0, speed * Time.deltaTime, 0);
-            animator.SetInteger("direction", (int)Direction.Up);
-        }
-        else if (Input.GetKey(KeyCode.S))
-        {
-            transform.Translate(0, -speed * Time.deltaTime, 0);
-            animator.SetInteger("direction", (int)Direction.Down);
-        }
-        else if (Input.GetKey(KeyCode.A))
-        {
-            transform.Translate(-speed * Time.deltaTime, 0, 0);
-            animator.SetInteger("direction", (int)Direction.Left);
+
+            transform.Rotate(0, 0, 30 * 3 * Time.deltaTime);
+
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            transform.Translate(speed * Time.deltaTime, 0, 0);
-            animator.SetInteger("direction", (int)Direction.Right);
+            transform.Rotate(0, 0, 30 * -3 * Time.deltaTime);
+
         }
-        else animator.speed = 0;
+        //else animator.speed = 0;
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
