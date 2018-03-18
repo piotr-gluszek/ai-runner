@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     {
 
         Vector3 offset =new Vector3(0,(float)0.5, 0);
+        offset = transform.rotation * offset ;
         // Set up a raycast hit for knowing what we hit
         RaycastHit2D hit;
 
