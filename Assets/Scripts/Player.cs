@@ -34,7 +34,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckDistance();
+        //CheckDistance();
         DetectMovement();
     }
 
@@ -112,11 +112,11 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log(collision.gameObject.name);
-        if (collision.gameObject.name == "FinishLine")
+        if (collision.gameObject.tag == "Finish")
         {
             SceneManager.LoadScene("Success");
         }
-        //Destroy(collision.gameObject);
+       
     }
 
 
