@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class SuccessMenu : MonoBehaviour {
 public void LoadNextLevel()
     {
-        SceneManager.LoadScene("Game");
+        SceneManager.LoadScene("Creator");
     }
 
 }

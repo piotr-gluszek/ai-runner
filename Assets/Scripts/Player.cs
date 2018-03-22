@@ -15,7 +15,7 @@ enum Direction
 public class Player : MonoBehaviour
 {
     
-    // Use this for initialization
+    // Movement speed of Player.
     public float speed;
     Animator animator;
     public float[] inp;
@@ -26,16 +26,18 @@ public class Player : MonoBehaviour
     {
         col = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
-        SetUpInputsDisplay();
+        animator.speed = 0;
+        //SetUpInputsDisplay();
     }
 
-   
+
 
     // Update is called once per frame
     void Update()
     {
         //CheckDistance();
         DetectMovement();
+       
     }
 
     private void CheckDistance()
@@ -89,11 +91,17 @@ public class Player : MonoBehaviour
 
     void DetectMovement()
     {
-        animator.speed = 1;
+       
 
 
         transform.Translate(0, speed / 2 * Time.deltaTime, 0);
         animator.SetInteger("direction", (int)Direction.Up);
+        // Starting movement after pressing Spacebar.
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            animator.speed = 1;
+            speed = 2;
+        }
         if (Input.GetKey(KeyCode.A))
         {
 
@@ -105,7 +113,7 @@ public class Player : MonoBehaviour
             transform.Rotate(0, 0, 30 * -3 * Time.deltaTime);
 
         }
-        //else animator.speed = 0;
+        
 
     }
 
@@ -124,9 +132,10 @@ public class Player : MonoBehaviour
     {
         if (inp.Length == 0)
             inputText.text = "L= 0 LF= 0 F= 0 RF= 0 R= 0";
-        else {
-            if(inp.Length==5)
-            inputText.text = "L= " + inp[0].ToString() + "\nLF= " + inp[1].ToString() + "\nF= " + inp[2].ToString() + "\nRF= " + inp[3].ToString() + "\nR= " + inp[4].ToString();
+        else
+        {
+            if (inp.Length == 5)
+                inputText.text = "L= " + inp[0].ToString() + "\nLF= " + inp[1].ToString() + "\nF= " + inp[2].ToString() + "\nRF= " + inp[3].ToString() + "\nR= " + inp[4].ToString();
         }
     }
 

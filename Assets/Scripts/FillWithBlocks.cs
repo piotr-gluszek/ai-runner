@@ -34,6 +34,8 @@ public class FillWithBlocks : MonoBehaviour
         float camX = CalculateScreenSizeInWorldCoords().x;
         float camY = CalculateScreenSizeInWorldCoords().y;
 
+
+        // Filling scene with blocks in four directions as [0,0] point is in the middle of the scene.
         for (int y = 0; y < camY/sizeY/2; y++)
         {
             for (int x = 0; x < camX/sizeX/2; x++)
@@ -57,6 +59,8 @@ public class FillWithBlocks : MonoBehaviour
         {
             for (int x = 0; x < camX / sizeX / 2; x++)
             {
+                // Leave room for the Player.
+                if(x * sizeX + sizeX / 2 != 5.5 || -(y * sizeY + sizeY / 2) != -3.50)
                 Instantiate(block, new Vector3(x * sizeX + sizeX / 2, -(y * sizeY + sizeY / 2), 0), Quaternion.identity);
 
 
@@ -71,13 +75,10 @@ public class FillWithBlocks : MonoBehaviour
 
             }
         }
-        Debug.Log(camX+" "+camY+" "+sizeX+" "+sizeY);
+      
     }
 
-    private void Update()
-    {
-        
-    }
+    
 }
 
 
