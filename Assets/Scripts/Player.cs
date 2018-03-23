@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using NN;
+using System.Runtime.InteropServices;
+
 enum Direction
 {
     Up,
@@ -21,12 +24,25 @@ public class Player : MonoBehaviour
     public float[] inp;
     public Text inputText;
     BoxCollider2D col;
+    float movment;
+    NeuralNetwork brain;
+
+    [DllImport("kernel32")]
+    extern static UInt64 GetTickCount64();
+
+
 
     void Start()
     {
+
+
         col = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         animator.speed = 0;
+
+        UnityEngine.Random.InitState(GetUpTime());
+        brain = new NeuralNetwork(5, 2);
+        brain.SetRandomDNA();
         //SetUpInputsDisplay();
     }
 
@@ -35,9 +51,9 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //CheckDistance();
-        DetectMovement();
-       
+        CheckDistance();
+        //DetectMovement();
+        NeuralNetworkMove();
     }
 
     private void CheckDistance()
@@ -116,6 +132,19 @@ public class Player : MonoBehaviour
         
 
     }
+    void NeuralNetworkMove() {
+        transform.Translate(0, speed / 2 * Time.deltaTime, 0);
+        animator.SetInteger("direction", (int)Direction.Up);
+
+        brain.CalculateOutput(inp);
+        movment = brain.GetOutput();
+
+        transform.Rotate(0, 0, 30 * 3* movment * Time.deltaTime);
+
+
+    }
+
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -136,9 +165,15 @@ public class Player : MonoBehaviour
         {
             if (inp.Length == 5)
                 inputText.text = "L= " + inp[0].ToString() + "\nLF= " + inp[1].ToString() + "\nF= " + inp[2].ToString() + "\nRF= " + inp[3].ToString() + "\nR= " + inp[4].ToString();
+            inputText.text += "\n output= " + movment;
         }
     }
 
+
+    public static int GetUpTime()
+    {
+        return (int)GetTickCount64();
+    }
 
 
 }
