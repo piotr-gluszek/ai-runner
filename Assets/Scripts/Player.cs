@@ -133,6 +133,13 @@ public class Player : MonoBehaviour
 
     }
     void NeuralNetworkMove() {
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            speed = 2;
+            animator.speed = 1;
+        }
+       
+
         transform.Translate(0, speed / 2 * Time.deltaTime, 0);
         animator.SetInteger("direction", (int)Direction.Up);
 
