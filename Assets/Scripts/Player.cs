@@ -17,6 +17,7 @@ enum Direction
 
 public class Player : MonoBehaviour
 {
+
     const float MOVEMENT_SPEED = 2;
     const float ANIMATION_SPEED = 1;
     bool moving = false;
@@ -27,9 +28,12 @@ public class Player : MonoBehaviour
     public float[] inputs;
     public Text inputText;
     NeuralNetwork brain;
+
     // Components.
     BoxCollider2D collider;
     Animator animator;
+
+    public GameObject options;
 
     [DllImport("kernel32")]
     extern static UInt64 GetTickCount64();
@@ -135,9 +139,15 @@ public class Player : MonoBehaviour
 
 
     void NeuralNetworkMove() {
-        if(Input.GetKeyDown(KeyCode.Space))
+
+        // Disable movement while Options are displayed.
+        // Start moving after pressing Spacebar.
+        if (!options.activeInHierarchy)
         {
-            Move();
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                Move();
+            }
         }
 
         if (moving)
