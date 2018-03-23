@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FillWithBlocks : MonoBehaviour
+public class CreatorSetup : MonoBehaviour
 {
     // Prefab used to fill the scene with.
     public GameObject block;

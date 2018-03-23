@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DestroyOnMouseDown : MonoBehaviour
+public class Block : MonoBehaviour
 {
 
     private void OnMouseOver()

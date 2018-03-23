@@ -17,15 +17,19 @@ enum Direction
 
 public class Player : MonoBehaviour
 {
-    
+    const float MOVEMENT_SPEED = 2;
+    const float ANIMATION_SPEED = 1;
+    bool moving = false;
+
     // Movement speed of Player.
-    public float speed;
-    Animator animator;
-    public float[] inp;
+    public float movementSpeed;
+    float rotationSpeed;
+    public float[] inputs;
     public Text inputText;
-    BoxCollider2D col;
-    float movment;
     NeuralNetwork brain;
+    // Components.
+    BoxCollider2D collider;
+    Animator animator;
 
     [DllImport("kernel32")]
     extern static UInt64 GetTickCount64();
@@ -34,16 +38,10 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-
-
-        col = GetComponent<BoxCollider2D>();
+        collider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
-        animator.speed = 0;
-
-        UnityEngine.Random.InitState(GetUpTime());
-        brain = new NeuralNetwork(5, 2);
-        brain.SetRandomDNA();
-        //SetUpInputsDisplay();
+        Freeze();
+        InitializeNeuralNetwork();
     }
 
 
@@ -51,15 +49,17 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(moving)
         CheckDistance();
-        //DetectMovement();
+
+        UpdateInputs();     
         NeuralNetworkMove();
     }
 
     private void CheckDistance()
     {
 
-        Vector2 offsetY = col.size.y * transform.localScale/2;
+        Vector2 offsetY = collider.size.y * transform.localScale/2;
         Vector3 offset =new Vector3(0,(float)offsetY.y, 0);
         offset = transform.rotation * offset ;
         // Set up a raycast hit for knowing what we hit
@@ -81,7 +81,7 @@ public class Player : MonoBehaviour
         };
 
         // Use this to collect all feeler distances, then well pass them through our NN for an output
-        inp = new float[feeler.Length];
+        inputs = new float[feeler.Length];
 
         // Loop through all feelers
         for (int i = 0; i < feeler.Length; i++)
@@ -90,10 +90,10 @@ public class Player : MonoBehaviour
             if (hit=Physics2D.Raycast(transform.position+offset, feeler[i]))
             {
                 // If feelers feel something other than  nothing
-                if (hit.collider != null && hit.collider != col)
+                if (hit.collider != null && hit.collider != collider)
                 {
                     // Set the input[i] to be the distance of feeler[i]
-                    inp[i] = hit.distance;
+                    inputs[i] = hit.distance;
                     
                 }
 
@@ -102,7 +102,7 @@ public class Player : MonoBehaviour
             // Draw the feelers in the Scene mode
             Debug.DrawRay(transform.position+offset, feeler[i] * 2, Color.red);           
         }
-        SetUpInputsDisplay();
+       
     }
 
     void DetectMovement()
@@ -110,13 +110,13 @@ public class Player : MonoBehaviour
        
 
 
-        transform.Translate(0, speed / 2 * Time.deltaTime, 0);
+        transform.Translate(0, movementSpeed / 2 * Time.deltaTime, 0);
         animator.SetInteger("direction", (int)Direction.Up);
         // Starting movement after pressing Spacebar.
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            animator.speed = 1;
-            speed = 2;
+            animator.speed = ANIMATION_SPEED;
+            movementSpeed = MOVEMENT_SPEED;
         }
         if (Input.GetKey(KeyCode.A))
         {
@@ -132,22 +132,24 @@ public class Player : MonoBehaviour
         
 
     }
+
+
     void NeuralNetworkMove() {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            speed = 2;
-            animator.speed = 1;
+            Move();
         }
-       
 
-        transform.Translate(0, speed / 2 * Time.deltaTime, 0);
-        animator.SetInteger("direction", (int)Direction.Up);
+        if (moving)
+        {
+            transform.Translate(0, movementSpeed / 2 * Time.deltaTime, 0);
+            animator.SetInteger("direction", (int)Direction.Up);
 
-        brain.CalculateOutput(inp);
-        movment = brain.GetOutput();
+            brain.CalculateOutput(inputs);
+            rotationSpeed = brain.GetOutput();
 
-        transform.Rotate(0, 0, 30 * 3* movment * Time.deltaTime);
-
+            transform.Rotate(0, 0, 30 * 3 * rotationSpeed * Time.deltaTime);
+        }
 
     }
 
@@ -164,15 +166,15 @@ public class Player : MonoBehaviour
     }
 
 
-    private void SetUpInputsDisplay()
+    private void UpdateInputs()
     {
-        if (inp.Length == 0)
+        if (inputs.Length == 0)
             inputText.text = "L= 0 LF= 0 F= 0 RF= 0 R= 0";
         else
         {
-            if (inp.Length == 5)
-                inputText.text = "L= " + inp[0].ToString() + "\nLF= " + inp[1].ToString() + "\nF= " + inp[2].ToString() + "\nRF= " + inp[3].ToString() + "\nR= " + inp[4].ToString();
-            inputText.text += "\n output= " + movment;
+            if (inputs.Length == 5)
+                inputText.text = "L= " + inputs[0].ToString() + "\nLF= " + inputs[1].ToString() + "\nF= " + inputs[2].ToString() + "\nRF= " + inputs[3].ToString() + "\nR= " + inputs[4].ToString();
+            inputText.text += "\n output= " + rotationSpeed;
         }
     }
 
@@ -182,5 +184,33 @@ public class Player : MonoBehaviour
         return (int)GetTickCount64();
     }
 
+    bool isMoving()
+    {
+        return moving;
+    }
 
+    // Stop animation, stop movement and set flag. Disable collider.
+    public void Freeze()
+    {
+        movementSpeed = 0;
+        animator.speed = 0;
+        collider.enabled = false;
+        moving = false;
+    }
+
+    // Start animation, start movement and set flag. Enable collider.
+    public void Move()
+    {
+        movementSpeed = MOVEMENT_SPEED;
+        animator.speed = ANIMATION_SPEED;
+        collider.enabled = true;
+        moving = true;
+    }
+
+    void InitializeNeuralNetwork()
+    {
+        UnityEngine.Random.InitState(GetUpTime());
+        brain = new NeuralNetwork(5, 2);
+        brain.SetRandomDNA();
+    }
 }
