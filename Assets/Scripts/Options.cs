@@ -5,6 +5,23 @@ using UnityEngine.SceneManagement;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
+[System.Serializable]
+public class BlockData
+{
+    public float X;
+    public float Y;
+    public string tag;
+    public BlockData() { }
+    public BlockData(float X, float Y, string tag)
+    {
+        this.X = X;
+        this.Y = Y;
+        this.tag = tag;
+
+    }
+}
+
+
 public class Options : MonoBehaviour
 {
 
@@ -15,6 +32,11 @@ public class Options : MonoBehaviour
     public Player player;
     GameObject buttons;
     bool isActive;
+
+    public bool isMenuActive()
+    {
+        return isActive;
+    }
 
     void Start()
     {
@@ -89,21 +111,38 @@ public class Options : MonoBehaviour
         }
 
     }
+    List<BlockData> blocksData;
+    void GetBlocksData()
+    {
+        blocksData= new List<BlockData>();
+        float X, Y;
+        string tag;
+        foreach (GameObject block in blocks)
+        {
+            X = block.GetComponent<Transform>().position.x;
+            Y = block.GetComponent<Transform>().position.y;
+            tag = block.tag;
+            blocksData.Add(new BlockData(X,Y,tag));
+            
+
+        }
+
+    }
 
     void Serialize()
     {
         FileStream fs = new FileStream("SavedScene23022018.dat", FileMode.Create);
 
         // Construct a BinaryFormatter and use it to serialize the data to the stream.
-        BinaryFormatter formatter = new BinaryFormatter();
-        blockCoordinates.Insert(0, (float)savedBlocksNum);
-        formatter.Serialize(fs, blockCoordinates);
+        BinaryFormatter formatter = new BinaryFormatter();    
+        formatter.Serialize(fs, blocksData);
+
         fs.Close();
     }
     public void Save()
     {
         FindBlocks();
-        GetBlockCoordinates();
+        GetBlocksData();
         Serialize();
 
     }
@@ -114,7 +153,7 @@ public class Options : MonoBehaviour
 
         // Deserialize the hashtable from the file and 
         // assign the reference to the local variable.
-        blockCoordinates = (List<float>)formatter.Deserialize(fs);
+        blocksData = (List<BlockData>)formatter.Deserialize(fs);
         fs.Close();
     }
     public void Load()
@@ -140,14 +179,18 @@ public class Options : MonoBehaviour
 
     void SetBlocksUp()
     {
-        float X, Y;
-        savedBlocksNum = (int)blockCoordinates[0];
-
-        for (int index = 1; index < (savedBlocksNum*2+1); index += 2)
+       
+        GameObject block;
+        foreach (BlockData data in blocksData)
         {
-            X = blockCoordinates[index];
-            Y = blockCoordinates[index + 1];
-            Instantiate(blockPrefab, new Vector3(X, Y, 0), Quaternion.identity);
+           block=Instantiate(blockPrefab, new Vector3(data.X, data.Y, 0), Quaternion.identity);
+           block.tag = data.tag;
+            if (block.tag == "Finish")
+            {
+                block.GetComponent<SpriteRenderer>().color = Color.green;
+            }
+
+
         }
 
     }
