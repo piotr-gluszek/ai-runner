@@ -4,6 +4,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEditor;
+
+
+
 
 [System.Serializable]
 public class BlockData
@@ -131,7 +135,8 @@ public class Options : MonoBehaviour
 
     void Serialize()
     {
-        FileStream fs = new FileStream("SavedScene23022018.dat", FileMode.Create);
+        string path = EditorUtility.SaveFilePanel("Saving stage...", "", "", "dat");
+        FileStream fs = new FileStream(path, FileMode.Create);
 
         // Construct a BinaryFormatter and use it to serialize the data to the stream.
         BinaryFormatter formatter = new BinaryFormatter();    
@@ -141,6 +146,8 @@ public class Options : MonoBehaviour
     }
     public void Save()
     {
+
+        
         FindBlocks();
         GetBlocksData();
         Serialize();
@@ -148,7 +155,8 @@ public class Options : MonoBehaviour
     }
     void Deserialize()
     {
-        FileStream fs = new FileStream("SavedScene23022018.dat", FileMode.Open);
+        string path = EditorUtility.OpenFilePanel("Saved stages", "", "dat");
+        FileStream fs = new FileStream(path, FileMode.Open);
         BinaryFormatter formatter = new BinaryFormatter();
 
         // Deserialize the hashtable from the file and 
