@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
     BoxCollider2D collider;
     Animator animator;
 
-    public GameObject options;
+    //public GameObject options;
 
     [DllImport("kernel32")]
     extern static UInt64 GetTickCount64();
@@ -42,10 +42,16 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        tag = "Alive";
         collider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         Freeze();
         InitializeNeuralNetwork();
+
+        if (inputText != null) {
+            inputText = GameObject.FindGameObjectWithTag("inputText").GetComponent<Text>();
+        }
+
     }
 
 
@@ -142,13 +148,13 @@ public class Player : MonoBehaviour
 
         // Disable movement while Options are displayed.
         // Start moving after pressing Spacebar.
-        if (!options.activeInHierarchy)
-        {
+        //if (!options.activeInHierarchy)
+        //
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Move();
             }
-        }
+        //}
 
         if (moving)
         {
@@ -158,7 +164,7 @@ public class Player : MonoBehaviour
             brain.CalculateOutput(inputs);
             rotationSpeed = brain.GetOutput();
 
-            transform.Rotate(0, 0, 30 * 3 * rotationSpeed * Time.deltaTime);
+            transform.Rotate(0, 0, 200 * rotationSpeed * Time.deltaTime);
         }
 
     }
@@ -168,6 +174,10 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log(collision.gameObject.name);
+        if (collision.gameObject.tag == "Wall") {
+            Freeze();
+            tag = "Dead";
+        }
         if (collision.gameObject.tag == "Finish")
         {
             SceneManager.LoadScene("Success");
@@ -178,6 +188,7 @@ public class Player : MonoBehaviour
 
     private void UpdateInputs()
     {
+        if(inputText!=null)
         if (inputs.Length == 0)
             inputText.text = "L= 0 LF= 0 F= 0 RF= 0 R= 0";
         else
@@ -217,10 +228,12 @@ public class Player : MonoBehaviour
         moving = true;
     }
 
-    void InitializeNeuralNetwork()
+     public void InitializeNeuralNetwork()
     {
         UnityEngine.Random.InitState(GetUpTime());
         brain = new NeuralNetwork(5, 2);
         brain.SetRandomDNA();
     }
+    
+
 }

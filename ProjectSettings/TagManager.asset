@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wall
+  - Dead
+  - Alive
+  - inputText
   layers:
   - Default
   - TransparentFX
