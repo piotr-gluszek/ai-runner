@@ -46,9 +46,11 @@ public class Player : MonoBehaviour
         collider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         Freeze();
-        InitializeNeuralNetwork();
 
-        if (inputText != null) {
+        if(brain==null)
+            InitializeNeuralNetwork();
+
+        if (inputText == null) {
             inputText = GameObject.FindGameObjectWithTag("inputText").GetComponent<Text>();
         }
 
@@ -64,7 +66,10 @@ public class Player : MonoBehaviour
 
         UpdateInputs();     
         NeuralNetworkMove();
+        NeuralNetworkIncrementFitness();
     }
+
+    
 
     private void CheckDistance()
     {
@@ -169,6 +174,13 @@ public class Player : MonoBehaviour
 
     }
 
+    //incrementing fitness every frame
+    private void NeuralNetworkIncrementFitness()
+    {
+        if(moving)
+        brain.IncrementFitness();
+    }
+
 
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -233,6 +245,11 @@ public class Player : MonoBehaviour
         UnityEngine.Random.InitState(GetUpTime());
         brain = new NeuralNetwork(5, 2);
         brain.SetRandomDNA();
+    }
+
+    public NeuralNetwork GetNeuralNetwork() {
+
+        return brain;
     }
     
 

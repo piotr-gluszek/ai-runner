@@ -11,17 +11,19 @@ namespace NN
     {
         int inputNumber;              //number of inputs, const for every hidden layer
 
-        float[] outputWaights;       // waights of output
-        float outputNodeWaight;
+        float[] outputWeights;       // waights of output
+        float outputNodeWeight;
         float _output = 0;
 
         int hiddenLayerNumber;
         int hiddenLayerNodeNumber;
-        float[][][] arrowWaights;    //waights of arrows connecting nodes
-        float[][] nodeWaights;       // node waights
+        float[][][] arrowWeights;    //waights of arrows connecting nodes
+        float[][] nodeWeights;       // node waights
 
-        float randNumSeedPlus = 1;
-        float randNumSeedMinus = -1;
+        float randNumPlus = 4;
+        float randNumMinus = -4;
+
+        float fitness;
 
         //creates NN
         public NeuralNetwork(int input, int hLN)
@@ -31,24 +33,24 @@ namespace NN
             hiddenLayerNodeNumber = input;
 
             //creating 3d table for arrow waights
-            arrowWaights = new float[hiddenLayerNumber][][];
+            arrowWeights = new float[hiddenLayerNumber][][];
             for (int i = 0; i < hiddenLayerNumber; i++)
             {
-                arrowWaights[i] = new float[hiddenLayerNodeNumber][];
+                arrowWeights[i] = new float[hiddenLayerNodeNumber][];
                 for (int j = 0; j < hiddenLayerNodeNumber; j++)
                 {
-                    arrowWaights[i][j] = new float[inputNumber];
+                    arrowWeights[i][j] = new float[inputNumber];
                 }
             }
 
             //creating 2d table for node waights
-            nodeWaights = new float[hiddenLayerNumber][];
+            nodeWeights = new float[hiddenLayerNumber][];
             for (int i = 0; i < hiddenLayerNumber; i++)
             {
-                nodeWaights[i] = new float[hiddenLayerNodeNumber];
+                nodeWeights[i] = new float[hiddenLayerNodeNumber];
             }
 
-            outputWaights = new float[inputNumber];
+            outputWeights = new float[inputNumber];
 
 
         }
@@ -60,21 +62,62 @@ namespace NN
                 for (int j = 0; j < hiddenLayerNodeNumber; j++)
                     for (int k = 0; k < inputNumber; k++)
                     {
-                        arrowWaights[i][j][k] = GetRandomNumber(-randNumSeedMinus, randNumSeedPlus);
+                        arrowWeights[i][j][k] = GetRandomNumber(randNumMinus, randNumPlus);
                     }
 
             for (int i = 0; i < hiddenLayerNumber; i++)
                 for (int j = 0; j < hiddenLayerNodeNumber; j++)
                 {
-                    nodeWaights[i][j] = GetRandomNumber(-randNumSeedMinus, randNumSeedPlus);
+                    nodeWeights[i][j] = GetRandomNumber(randNumMinus, randNumPlus);
                 }
 
             for (int i = 0; i < inputNumber; i++)
-                outputWaights[i] = GetRandomNumber(-randNumSeedMinus, randNumSeedPlus);
+                outputWeights[i] = GetRandomNumber(randNumMinus, randNumPlus);
 
-            outputNodeWaight = GetRandomNumber(-randNumSeedMinus, randNumSeedPlus);
+            outputNodeWeight = GetRandomNumber(randNumMinus, randNumPlus);
 
         }
+
+
+        public void SetDNA(float[] dna) {
+
+            int counter = 0;
+            //checking for dna length
+            if (dna.Length == GetDNASize())
+            {
+                for (int i = 0; i < hiddenLayerNumber; i++)
+                    for (int j = 0; j < hiddenLayerNodeNumber; j++)
+                        for (int k = 0; k < inputNumber; k++)
+                        {
+                            arrowWeights[i][j][k] = dna[counter];
+                            counter++;
+                        }
+
+                for (int i = 0; i < hiddenLayerNumber; i++)
+                    for (int j = 0; j < hiddenLayerNodeNumber; j++)
+                    {
+                        nodeWeights[i][j] = dna[counter];
+                        counter++;
+                    }
+
+                for (int i = 0; i < inputNumber; i++)
+                {
+                    outputWeights[i] = dna[counter];
+                    counter++;
+                }
+
+                outputNodeWeight = dna[counter];
+               
+            }
+            //if DNA isn't valid
+            else {
+                Debug.Log("Error seting DNA! Randomizing");
+                SetRandomDNA();
+            }
+
+
+        }
+
 
         //return false if input.Lenght!=inputNumber
         //saves result in _output
@@ -94,7 +137,7 @@ namespace NN
             for (int i = 0; i < hiddenLayerNodeNumber; i++)
             {
                 tmpSums[0][i] = GetWaightedSum(i, 0, input)/inputNumber;
-                tmpSums[0][i] = tmpSums[0][i] * nodeWaights[0][i];
+                tmpSums[0][i] = tmpSums[0][i] * nodeWeights[0][i];
                 tmpSums[0][i] = (float)Math.Tanh(tmpSums[0][i]);
             }
 
@@ -105,7 +148,7 @@ namespace NN
                     for (int i = 0; i < hiddenLayerNodeNumber; i++)
                     {
                         tmpSums[j][i] = GetWaightedSum(i, j, tmpSums[j - 1])/inputNumber;
-                        tmpSums[j][i] = tmpSums[j][i] * nodeWaights[j][i];
+                        tmpSums[j][i] = tmpSums[j][i] * nodeWeights[j][i];
                         tmpSums[j][i] = (float)Math.Tanh(tmpSums[j][i]);
                     }
 
@@ -123,9 +166,9 @@ namespace NN
             _output = 0;
             for (int i = 0; i < inputNumber; i++)
             {
-                _output = outputWaights[i] * lastHiddenLayer[i];
+                _output = outputWeights[i] * lastHiddenLayer[i];
             }
-            _output *= outputNodeWaight/inputNumber;
+            _output *= outputNodeWeight/inputNumber;
             _output = (float)Math.Tanh(_output)/3;
         }
 
@@ -136,7 +179,7 @@ namespace NN
 
             for (int i = 0; i < input.Length; i++)
             {
-                sum += arrowWaights[nodeHLayerID][nodeID][i] * input[i];
+                sum += arrowWeights[nodeHLayerID][nodeID][i] * input[i];
             }
 
             return sum;
@@ -152,12 +195,64 @@ namespace NN
 
         public float GetRandomNumber(float minimum, float maximum)
         {
-            
-            //Random random = new Random();
-            return UnityEngine.Random.Range(-4f,4f);
-            //return (float)(random.NextDouble() * (maximum - minimum) + minimum);
-            //return (float)random.NextDouble();
+            //return UnityEngine.Random.Range(-4f,4f); 
+            return UnityEngine.Random.Range(minimum, maximum);
         }
+
+        public int GetDNASize() {
+
+            int DNASize = inputNumber * hiddenLayerNumber * hiddenLayerNodeNumber;//number of arrows in hidden layers
+            DNASize += inputNumber * hiddenLayerNumber;//number of hidden layers waght
+            DNASize += inputNumber;//number of output weights
+            DNASize += 1;//output weight
+
+            return DNASize;
+            
+        }
+
+        public float[] GetDNA() {
+            int size = GetDNASize();
+            float[] DNA = new float[size];
+            int c = 0; //counter;
+
+            for (int i = 0; i < hiddenLayerNumber; i++)
+                for (int j = 0; j < hiddenLayerNodeNumber; j++)
+                    for (int k = 0; k < inputNumber; k++)
+                    {
+                        DNA[c] = arrowWeights[i][j][k];
+                        c++;
+                    }
+
+            for (int i = 0; i < hiddenLayerNumber; i++)
+                for (int j = 0; j < hiddenLayerNodeNumber; j++)
+                {
+                    DNA[c] = nodeWeights[i][j];
+                    c++;
+                }
+
+            for (int i = 0; i < inputNumber; i++)
+            {
+                DNA[c] = outputWeights[i];
+                c++;
+            }
+
+            DNA[c] = outputNodeWeight;
+
+            return DNA;
+
+
+        }
+
+        public void IncrementFitness() {
+            fitness+=0.01f;
+        }
+
+        public float GetFitness() {
+
+            return fitness;
+
+        }
+
 
     }
 

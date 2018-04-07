@@ -1325,8 +1325,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 902b4ffb8a482bd4ab2dbc8fcc3c6b35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  child: {fileID: 114655778415114956, guid: d1b655e30d85cc74998db91f6e9a14b8, type: 2}
+  prefab: {fileID: 1864655617399010, guid: d1b655e30d85cc74998db91f6e9a14b8, type: 2}
+  child: {fileID: 0}
   startPoint: {fileID: 226503386}
+  finishLine: {fileID: 1292885969}
+  generationCount: 0
+  triesCount: 0
+  triesNumber: 3
+  mutationRate: 0.1
 --- !u!4 &1931107770
 Transform:
   m_ObjectHideFlags: 0
