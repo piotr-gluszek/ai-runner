@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,7 +34,7 @@ public class Options : MonoBehaviour
 
 
     // Game object which will be set active.
-    public Player player;
+   
     GameObject buttons;
     bool isActive;
 
@@ -44,7 +45,7 @@ public class Options : MonoBehaviour
 
     void Start()
     {
-        buttons = transform.Find("Buttons").gameObject;
+        buttons = transform.Find("Canvas/Buttons").gameObject;
         isActive = false;
 
     }
@@ -60,13 +61,13 @@ public class Options : MonoBehaviour
             if (!isActive)
             {
                 buttons.SetActive(true);
-                player.Freeze();
+                
 
             }
             else
             {
                 buttons.SetActive(false);
-                player.Move();
+               
             }
 
 
@@ -75,6 +76,11 @@ public class Options : MonoBehaviour
 
         }
 
+    }
+
+    public void BackToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     List<GameObject> blocks;
@@ -206,7 +212,6 @@ public class Options : MonoBehaviour
     {
 
         buttons.SetActive(false);
-        player.Move();
         isActive = false; 
     }
 }

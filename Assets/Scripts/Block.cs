@@ -10,13 +10,13 @@ public class Block : MonoBehaviour
     
     private void Start()
     {
-        options = GameObject.Find("Options");
+        options = GameObject.Find("Options/Canvas/Buttons");
        
     }
 
     private void OnMouseOver()
     {
-        optionsActive = options.transform.Find("Buttons").gameObject.activeInHierarchy;
+        optionsActive = options.activeSelf;
         // Ignore input if Options are displayed.
         if (!optionsActive)
         {

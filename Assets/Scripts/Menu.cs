@@ -7,6 +7,7 @@ public class Menu : MonoBehaviour {
 
     public void StartSimulation()
     {
+        SceneManager.LoadScene("Game");
         Debug.Log("Simulation started.");
     }
 
@@ -18,6 +19,7 @@ public class Menu : MonoBehaviour {
 
     public void RunMapCreator()
     {
+        SceneManager.LoadScene("Creator");
         Debug.Log("Map creator opened.");
     }
     public void Quit()
