@@ -16,7 +16,7 @@ public class Block : MonoBehaviour
 
     private void OnMouseOver()
     {
-        optionsActive = options.activeSelf;
+        optionsActive = false;
         // Ignore input if Options are displayed.
         if (!optionsActive)
         {

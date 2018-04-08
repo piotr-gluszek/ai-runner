@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class Controler : MonoBehaviour {
 
+    public GameObject blockPrefab;
     public GameObject prefab;
     public GameObject child;
     public Transform startPoint;
@@ -28,11 +32,68 @@ public class Controler : MonoBehaviour {
         dna = new float[triesNumber][];
         fitnesses = new float[triesNumber];
         alive = true;
-
+	    LoadSettings();
+	    Load();
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    void LoadSettings()
+    {
+        // Load all options from static class Settings.
+        triesNumber = Settings.AttemptNum;
+        mutationRate = Settings.MutationRate;
+    }
+    List<BlockData> blocksData;
+    void Deserialize()
+    {
+        string path = EditorUtility.OpenFilePanel("Saved stages", "", "dat");
+        FileStream fs = new FileStream(path, FileMode.Open);
+        BinaryFormatter formatter = new BinaryFormatter();
+
+        // Deserialize the hashtable from the file and 
+        // assign the reference to the local variable.
+        blocksData = (List<BlockData>)formatter.Deserialize(fs);
+        fs.Close();
+    }
+    public void Load()
+    {
+        DestroyBlocks();
+        Deserialize();
+        SetBlocksUp();
+    }
+    void DestroyBlocks()
+    {
+        List<GameObject> objects = new List<GameObject>();
+        Scene scene = SceneManager.GetActiveScene();
+        scene.GetRootGameObjects(objects);
+
+        // iterate root objects and do something
+        foreach (GameObject sceneObject in objects)
+        {
+            if (sceneObject.name == "Block(Clone)")
+                Destroy(sceneObject);
+        }
+    }
+
+
+    void SetBlocksUp()
+    {
+
+        GameObject block;
+        foreach (BlockData data in blocksData)
+        {
+            block = Instantiate(blockPrefab, new Vector3(data.X, data.Y, 0), Quaternion.identity);
+            block.tag = data.tag;
+            if (block.tag == "Finish")
+            {
+                block.GetComponent<SpriteRenderer>().color = Color.green;
+            }
+
+
+        }
+
+    }
+    // Update is called once per frame
+    void Update () {
 
         GameObject p = GameObject.FindGameObjectWithTag("Dead");
 
