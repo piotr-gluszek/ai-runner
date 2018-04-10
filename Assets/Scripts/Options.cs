@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using TMPro;
 using UnityEditor;
 
 
@@ -27,10 +28,69 @@ public class BlockData
 }
 
 
-public class Options : MonoBehaviour,ICommunicutable
+public class Options : MonoBehaviour, ICommunicutable
 {
 
+    private GameObject _mapNameInput;
+    private string _mapName;
 
+
+
+    // Game object which will be set active.
+    GameObject buttons;
+    bool isActive;
+
+    public bool isMenuActive()
+    {
+        return isActive;
+    }
+
+    void Start()
+    {
+        _mapNameInput = transform.Find("Canvas/MapNameInput").gameObject;
+        buttons = transform.Find("Canvas/Buttons").gameObject;
+        isActive = false;
+
+    }
+
+    public void ShowMapNameInput()
+    {
+        _mapNameInput.SetActive(true);
+
+    }
+
+    public void SubmitMapName()
+    {
+        _mapName = _mapNameInput.transform.Find("Input").gameObject.GetComponent<TMP_InputField>().text;
+        _mapNameInput.SetActive(false);
+
+    }
+    void Update()
+    {
+
+        // Show Options when ESC pressed.
+        // When ESC pressed while Options are visible set to invisible (inactive).
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!isActive)
+            {
+                buttons.SetActive(true);
+
+
+            }
+            else
+            {
+                buttons.SetActive(false);
+
+            }
+
+
+            isActive = !isActive;
+
+
+        }
+
+    }
     public void ProceedData(GameObject gameObj)
     {
         if (!isActive)
@@ -48,52 +108,6 @@ public class Options : MonoBehaviour,ICommunicutable
             }
         }
     }
-
-    // Game object which will be set active.
-   
-    GameObject buttons;
-    bool isActive;
-
-    public bool isMenuActive()
-    {
-        return isActive;
-    }
-
-    void Start()
-    {
-        buttons = transform.Find("Canvas/Buttons").gameObject;
-        isActive = false;
-
-    }
-
-
-    void Update()
-    {
-
-        // Show Options when ESC pressed.
-        // When ESC pressed while Options are visible set to invisible (inactive).
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!isActive)
-            {
-                buttons.SetActive(true);
-                
-
-            }
-            else
-            {
-                buttons.SetActive(false);
-               
-            }
-
-
-            isActive = !isActive;
-
-
-        }
-
-    }
-
     public void BackToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
@@ -140,7 +154,7 @@ public class Options : MonoBehaviour,ICommunicutable
     List<BlockData> blocksData;
     void GetBlocksData()
     {
-        blocksData= new List<BlockData>();
+        blocksData = new List<BlockData>();
         float X, Y;
         string tag;
         foreach (GameObject block in blocks)
@@ -148,8 +162,8 @@ public class Options : MonoBehaviour,ICommunicutable
             X = block.GetComponent<Transform>().position.x;
             Y = block.GetComponent<Transform>().position.y;
             tag = block.tag;
-            blocksData.Add(new BlockData(X,Y,tag));
-            
+            blocksData.Add(new BlockData(X, Y, tag));
+
 
         }
 
@@ -157,11 +171,11 @@ public class Options : MonoBehaviour,ICommunicutable
 
     void Serialize()
     {
-        string path = EditorUtility.SaveFilePanel("Saving stage...", "", "", "dat");
+        string path = @"Maps\" + _mapName + ".dat";
         FileStream fs = new FileStream(path, FileMode.Create);
 
         // Construct a BinaryFormatter and use it to serialize the data to the stream.
-        BinaryFormatter formatter = new BinaryFormatter();    
+        BinaryFormatter formatter = new BinaryFormatter();
         formatter.Serialize(fs, blocksData);
 
         fs.Close();
@@ -169,66 +183,16 @@ public class Options : MonoBehaviour,ICommunicutable
     public void Save()
     {
 
-        
         FindBlocks();
         GetBlocksData();
         Serialize();
 
     }
-    void Deserialize()
-    {
-        string path = EditorUtility.OpenFilePanel("Saved stages", "", "dat");
-        FileStream fs = new FileStream(path, FileMode.Open);
-        BinaryFormatter formatter = new BinaryFormatter();
 
-        // Deserialize the hashtable from the file and 
-        // assign the reference to the local variable.
-        blocksData = (List<BlockData>)formatter.Deserialize(fs);
-        fs.Close();
-    }
-    public void Load()
-    {
-        DestroyBlocks();
-        Deserialize();
-        SetBlocksUp();
-    }
-    void DestroyBlocks()
-    {
-        List<GameObject> objects = new List<GameObject>();
-        Scene scene = SceneManager.GetActiveScene();
-        scene.GetRootGameObjects(objects);
-
-        // iterate root objects and do something
-        foreach (GameObject sceneObject in objects)
-        {
-            if (sceneObject.name == "Block(Clone)")
-                Destroy(sceneObject);
-        }
-    }
-
-
-    void SetBlocksUp()
-    {
-       
-        GameObject block;
-        foreach (BlockData data in blocksData)
-        {
-           block=Instantiate(blockPrefab, new Vector3(data.X, data.Y, 0), Quaternion.identity);
-            block.GetComponent<IInitializable>().Initialize(transform.gameObject);
-           block.tag = data.tag;
-            if (block.tag == "Finish")
-            {
-                block.GetComponent<SpriteRenderer>().color = Color.green;
-            }
-
-
-        }
-
-    }
     public void Resume()
     {
 
         buttons.SetActive(false);
-        isActive = false; 
+        isActive = false;
     }
 }
