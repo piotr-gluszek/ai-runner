@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using NN;
 using System.Runtime.InteropServices;
+using TMPro;
 
 enum Direction
 {
@@ -26,7 +27,7 @@ public class Player : MonoBehaviour
     public float movementSpeed;
     float rotationSpeed;
     public float[] inputs;
-    public Text inputText;
+    public TMP_Text inputText;
     NeuralNetwork brain;
 
     // Components.
@@ -45,16 +46,15 @@ public class Player : MonoBehaviour
         tag = "Alive";
         collider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
-        if(!moving)
-           Freeze();
-        else  Move(); 
+        if (!moving)
+            Freeze();
+        else Move();
 
-        if(brain==null)
+        if (brain == null)
             InitializeNeuralNetwork();
 
-        if (inputText == null) {
-            inputText = GameObject.FindGameObjectWithTag("inputText").GetComponent<Text>();
-        }
+            inputText = GameObject.Find("Text").GetComponent<TMP_Text>();
+        
 
     }
 
@@ -63,22 +63,22 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(moving)
-        CheckDistance();
+        if (moving)
+            CheckDistance();
 
-        UpdateInputs();     
+        UpdateInputs();
         NeuralNetworkMove();
         NeuralNetworkIncrementFitness();
     }
 
-    
+
 
     private void CheckDistance()
     {
 
-        Vector2 offsetY = collider.size.y * transform.localScale/2;
-        Vector3 offset =new Vector3(0,(float)offsetY.y, 0);
-        offset = transform.rotation * offset ;
+        Vector2 offsetY = collider.size.y * transform.localScale / 2;
+        Vector3 offset = new Vector3(0, (float)offsetY.y, 0);
+        offset = transform.rotation * offset;
         // Set up a raycast hit for knowing what we hit
         RaycastHit2D hit;
 
@@ -104,27 +104,27 @@ public class Player : MonoBehaviour
         for (int i = 0; i < feeler.Length; i++)
         {
             // See what all feelers feel
-            if (hit=Physics2D.Raycast(transform.position+offset, feeler[i]))
+            if (hit = Physics2D.Raycast(transform.position + offset, feeler[i]))
             {
                 // If feelers feel something other than  nothing
                 if (hit.collider != null && hit.collider != collider)
                 {
                     // Set the input[i] to be the distance of feeler[i]
                     inputs[i] = hit.distance;
-                    
+
                 }
 
             }
-            
+
             // Draw the feelers in the Scene mode
-            Debug.DrawRay(transform.position+offset, feeler[i] * 2, Color.red);           
+            Debug.DrawRay(transform.position + offset, feeler[i] * 2, Color.red);
         }
-       
+
     }
 
     void DetectMovement()
     {
-       
+
 
 
         transform.Translate(0, movementSpeed / 2 * Time.deltaTime, 0);
@@ -146,21 +146,22 @@ public class Player : MonoBehaviour
             transform.Rotate(0, 0, 30 * -3 * Time.deltaTime);
 
         }
-        
+
 
     }
 
 
-    void NeuralNetworkMove() {
+    void NeuralNetworkMove()
+    {
 
         // Disable movement while Options are displayed.
         // Start moving after pressing Spacebar.
         //if (!options.activeInHierarchy)
         //
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Move();
-            }
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Move();
+        }
         //}
 
         if (moving)
@@ -179,8 +180,8 @@ public class Player : MonoBehaviour
     //incrementing fitness every frame
     private void NeuralNetworkIncrementFitness()
     {
-        if(moving)
-        brain.IncrementFitness();
+        if (moving)
+            brain.IncrementFitness();
     }
 
 
@@ -188,29 +189,30 @@ public class Player : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log(collision.gameObject.name);
-        if (collision.gameObject.tag == "Wall") {
+        if (collision.gameObject.tag == "Wall")
+        {
             Freeze();
             tag = "Dead";
         }
         if (collision.gameObject.tag == "Finish")
         {
-            SceneManager.LoadScene("Success");
+            tag = "Dead";
         }
-       
+
     }
 
 
     private void UpdateInputs()
     {
-        if(inputText!=null)
-        if (inputs.Length == 0)
-            inputText.text = "L= 0 LF= 0 F= 0 RF= 0 R= 0";
-        else
-        {
-            if (inputs.Length == 5)
-                inputText.text = "L= " + inputs[0].ToString() + "\nLF= " + inputs[1].ToString() + "\nF= " + inputs[2].ToString() + "\nRF= " + inputs[3].ToString() + "\nR= " + inputs[4].ToString();
-            inputText.text += "\n output= " + rotationSpeed;
-        }
+        if (inputText != null)
+            if (inputs.Length == 0)
+                inputText.text = "L= 0\nLF= 0\nF= 0\nRF= 0\nR= 0";
+            else
+            {
+                if (inputs.Length == 5)
+                    inputText.text = "L= " + inputs[0].ToString() + "\nLF= " + inputs[1].ToString() + "\nF= " + inputs[2].ToString() + "\nRF= " + inputs[3].ToString() + "\nR= " + inputs[4].ToString();
+                inputText.text += "\nOutput= " + rotationSpeed;
+            }
     }
 
 
@@ -244,18 +246,19 @@ public class Player : MonoBehaviour
         moving = true;
     }
 
-     public void InitializeNeuralNetwork()
+    public void InitializeNeuralNetwork()
     {
         UnityEngine.Random.InitState(GetUpTime());
         brain = new NeuralNetwork(5, 2);
         brain.SetRandomDNA();
     }
 
-    public NeuralNetwork GetNeuralNetwork() {
+    public NeuralNetwork GetNeuralNetwork()
+    {
 
         return brain;
     }
-    
+
 
 
 }
