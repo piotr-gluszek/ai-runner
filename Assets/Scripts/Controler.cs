@@ -243,14 +243,15 @@ public class Controler : MonoBehaviour {
             for (int j = 0; j < dna[i].Length; j++) {
                 output += dna[i][j] + " ";              
             }
-            output += " fitness= "+fitnesses[i]+"\r\n";
+            output += "\r\n fitness= "+fitnesses[i]+"\r\n";
         }
         
 
-        File.WriteAllText("Saves\\generation" + generationCount + ".txt", output);
+        File.WriteAllText("DNA\\generation" + generationCount + ".txt", output);
 
         generationCount++;
 
     }
+
 
 }
