@@ -38,7 +38,7 @@ public class Options : MonoBehaviour,ICommunicutable
             if (Input.GetMouseButton(0))
             {
                 Destroy(gameObj);
-                Debug.Log("OnMouseOver: destory");
+                Debug.Log("OnMouseOver: destory.");
             }
             else if (Input.GetMouseButtonDown(1))
             {
