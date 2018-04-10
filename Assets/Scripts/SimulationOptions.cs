@@ -32,7 +32,7 @@ public class SimulationOptions : MonoBehaviour
     public void SubmitDna()
     {
         string dnaName = _dnaSelector.transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().captionText.text;
-        Settings.DnaFilePath = @"DNA\" + dnaName + ".dna";
+        Settings.DnaFilePath = @"DNA\" + dnaName + ".txt";
         _dnaSelector.SetActive(false);
     }
 

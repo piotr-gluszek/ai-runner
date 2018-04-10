@@ -17,11 +17,11 @@ public class DnaSelector : MonoBehaviour
 
     void LoadDnaNames()
     {
-        _dnaNames = new List<string>(Directory.GetFiles(@"DNA\", "*.dna"));
+        _dnaNames = new List<string>(Directory.GetFiles(@"DNA\", "*.txt"));
         for (int index = 0; index < _dnaNames.Count; index++)
         {
             _dnaNames[index] = _dnaNames[index].Replace(@"DNA\", "");
-            _dnaNames[index] = _dnaNames[index].Replace(".dna", "");
+            _dnaNames[index] = _dnaNames[index].Replace(".txt", "");
         }
         _dropdown.ClearOptions();
         _dropdown.AddOptions(_dnaNames);
