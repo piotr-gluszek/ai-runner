@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -21,7 +22,9 @@ public class Controler : MonoBehaviour {
     public int triesNumber;
     public float mutationRate;
     public float crossoverRate;
-
+    public string dnaFileName="generation0";
+    public int dnaLenght;
+    public int loadedLenght;
     float[][] dna;//saved DNA for one day; 
     float[] fitnesses;//fitnesses for DNA;
     bool alive = false;
@@ -123,6 +126,7 @@ public class Controler : MonoBehaviour {
                 Breed();
                 MutateDNA();
                 Debug.Log("Done breeding");
+                //LoadDNA();
             }
             triesCount++;
             if (child != null)
@@ -241,9 +245,9 @@ public class Controler : MonoBehaviour {
         string output="";
         for (int i = 0; i < dna.Length; i++) {
             for (int j = 0; j < dna[i].Length; j++) {
-                output += dna[i][j] + " ";              
+                output += dna[i][j]+" ";              
             }
-            output += "\r\n fitness= "+fitnesses[i]+"\r\n";
+            output += "\r\n fitness= \r\n"+fitnesses[i]+"\r\n";
         }
         
 
@@ -252,6 +256,43 @@ public class Controler : MonoBehaviour {
         generationCount++;
 
     }
+
+    void LoadDNA()
+    {
+ 
+ 
+       
+        if (File.Exists("DNA\\" + dnaFileName + ".txt")) {
+            using (StreamReader sr = new StreamReader("DNA\\" + dnaFileName + ".txt"))
+            {
+                for (int i = 0; i < triesNumber; i++) {
+                    string tmp = sr.ReadLine();
+                    string[] tmpStringTab = tmp.Split(' ');
+                    //test = tmpStringTab[0];
+                    tmpStringTab[0].Replace(",", ".");
+                    string test = tmpStringTab[0];
+                    float[] tmpFloatTab = new float[tmpStringTab.Length-1];
+                    for (int j = 0; j < tmpStringTab.Length-1; j++) {
+                        test = tmpStringTab[j];
+                        tmpFloatTab[j] =(float)Convert.ToDouble(test, CultureInfo.InvariantCulture);
+                    }
+                    dnaLenght = dna[i].Length;
+                    loadedLenght = tmpFloatTab.Length;
+                    if (dna[i] == null)
+                        dna[i] = new float[tmpFloatTab.Length];
+                    
+                    tmpFloatTab.CopyTo(dna[i],0);
+                    sr.ReadLine();
+                    sr.ReadLine();
+                }
+
+            }
+
+        }
+        
+    }
+
+
 
 
 }

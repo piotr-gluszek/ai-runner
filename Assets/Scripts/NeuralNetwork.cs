@@ -111,7 +111,7 @@ namespace NN
             }
             //if DNA isn't valid
             else {
-                Debug.Log("Error seting DNA! Randomizing");
+                Debug.Log("Error seting DNA! Randomizing "+ dna.Length+" "+GetDNA());
                 SetRandomDNA();
             }
 
