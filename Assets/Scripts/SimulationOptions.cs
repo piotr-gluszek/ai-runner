@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEditor.SceneManagement;
 using UnityEngine.SceneManagement;
@@ -8,13 +9,39 @@ using UnityEngine.SceneManagement;
 public class SimulationOptions : MonoBehaviour
 {
     private GameObject _selectDnaButton;
+    private GameObject _mapSelector;
+    private GameObject _dnaSelector;
 
     // Use this for initialization
     void Start()
     {
-        _selectDnaButton = GameObject.Find("Canvas/DNA/SelectDNAButton");
+        _selectDnaButton = GameObject.Find("Options/Canvas/DNA/SelectDNAButton");
+        _mapSelector = GameObject.Find("Options/Canvas/MapSelector");
+        _dnaSelector = GameObject.Find("Options/Canvas/DnaSelector");
     }
 
+    public void ShowMapSelector()
+    {
+        _mapSelector.SetActive(true);
+    }
+
+    public void ShowDnaSelector()
+    {
+        _dnaSelector.SetActive(true);
+    }
+    public void SubmitDna()
+    {
+        string dnaName = _dnaSelector.transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().captionText.text;
+        Settings.DnaFilePath = @"DNA\" + dnaName + ".dna";
+        _dnaSelector.SetActive(false);
+    }
+
+    public void SubmitMap()
+    {
+        string mapName = _mapSelector.transform.Find("Dropdown").gameObject.GetComponent<TMP_Dropdown>().captionText.text;
+        Settings.SelectedMapPath=@"Maps\"+mapName+".dat";
+        _mapSelector.SetActive(false);
+    }
     public void GoBackToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
