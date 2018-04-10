@@ -1773,7 +1773,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1941334070}
-  - component: {fileID: 1941334071}
   m_Layer: 5
   m_Name: MapNameInput
   m_TagString: Untagged
@@ -1803,17 +1802,6 @@ RectTransform:
   m_AnchoredPosition: {x: -175.99997, y: 111.000015}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1941334071
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1941334069}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99ff40522a4c89746abe25c10f4426ca, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2029093563
 GameObject:
   m_ObjectHideFlags: 0
