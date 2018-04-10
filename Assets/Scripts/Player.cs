@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
 
     const float MOVEMENT_SPEED = 2;
     const float ANIMATION_SPEED = 1;
-    bool moving = false;
+    public bool moving = false;
 
     // Movement speed of Player.
     public float movementSpeed;
@@ -45,7 +45,9 @@ public class Player : MonoBehaviour
         tag = "Alive";
         collider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
-        Freeze();
+        if(!moving)
+           Freeze();
+        else  Move(); 
 
         if(brain==null)
             InitializeNeuralNetwork();
@@ -169,7 +171,7 @@ public class Player : MonoBehaviour
             brain.CalculateOutput(inputs);
             rotationSpeed = brain.GetOutput();
 
-            transform.Rotate(0, 0, 200 * rotationSpeed * Time.deltaTime);
+            transform.Rotate(0, 0, 300 * rotationSpeed * Time.deltaTime);
         }
 
     }
@@ -234,7 +236,9 @@ public class Player : MonoBehaviour
     // Start animation, start movement and set flag. Enable collider.
     public void Move()
     {
+
         movementSpeed = MOVEMENT_SPEED;
+        animator = GetComponent<Animator>();
         animator.speed = ANIMATION_SPEED;
         collider.enabled = true;
         moving = true;
@@ -252,5 +256,6 @@ public class Player : MonoBehaviour
         return brain;
     }
     
+
 
 }

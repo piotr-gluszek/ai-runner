@@ -20,6 +20,7 @@ public class Controler : MonoBehaviour {
     public int triesCount;
     public int triesNumber;
     public float mutationRate;
+    public float crossoverRate;
 
     float[][] dna;//saved DNA for one day; 
     float[] fitnesses;//fitnesses for DNA;
@@ -27,14 +28,18 @@ public class Controler : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        LoadSettings();
+        Load();
         generationCount = 0;
         triesCount = 0;
         dna = new float[triesNumber][];
         fitnesses = new float[triesNumber];
-        alive = true;
-	    LoadSettings();
-	    Load();
-	}
+        alive = true;	   
+        finishLine = GameObject.FindGameObjectWithTag("Finish").GetComponent<Transform>();
+        startPoint.position = GameObject.FindGameObjectWithTag("Alive").GetComponent<Transform>().position;
+        startPoint.rotation = GameObject.FindGameObjectWithTag("Alive").GetComponent<Transform>().rotation;
+
+    }
 
     void LoadSettings()
     {
@@ -105,26 +110,36 @@ public class Controler : MonoBehaviour {
             fitnesses[triesCount] = p.GetComponent<Player>().GetNeuralNetwork().GetFitness();
             CalculateFinalFitness(p.GetComponent<Transform>().position);
             child=Instantiate(prefab);
+            child.transform.SetPositionAndRotation(startPoint.position, startPoint.rotation);
             Destroy(p);
             Debug.Log("Dead!!");
 
+            //if generation has ended
+            if (triesCount + 1 >= triesNumber)
+            {               
+                SortDNA();
+                SaveDNA();
+                triesCount = -1;
+                Breed();
+                MutateDNA();
+                Debug.Log("Done breeding");
+            }
+            triesCount++;
             if (child != null)
             {
                 child.GetComponent<Player>().InitializeNeuralNetwork();
-                child.GetComponent<Player>().GetNeuralNetwork().SetDNA(dna[triesCount]);
+                if (generationCount == 0)
+                    child.GetComponent<Player>().GetNeuralNetwork().SetRandomDNA();
+                else {
+                    child.GetComponent<Player>().GetNeuralNetwork().SetDNA(dna[triesCount]);
+                }
 
             }
-            triesCount++;
-            Debug.Log("Dead!!");
 
-            //alive = false;
-            //if generation has ended
-            if (triesCount >= triesNumber)
-            {
-                MutateDNA();
-                SaveDNA();
-                triesCount = 0;
-            }
+            child.GetComponent<Player>().moving=true;
+
+           
+            
         }
 
        
@@ -135,6 +150,71 @@ public class Controler : MonoBehaviour {
     private void CalculateFinalFitness(Vector3 position)
     {
         fitnesses[triesCount] -= Vector3.Distance(position, finishLine.position);
+    }
+
+
+
+    void Breed()
+    {
+        float[][] newDNA;
+        int lenght = dna.Length;
+        int dnaLenght=dna[0].Length;
+        int counter = 0;
+        newDNA = new float[lenght][];
+        float crossover;
+
+        for(int i=0;i<lenght/2; i++)
+        {
+            for(int j=i+1; j < lenght / 2+1; j++)
+            {
+                if (counter < lenght)
+                {
+                    newDNA[counter] = new float[dnaLenght];
+                    for (int k = 0; k < dnaLenght; k++) {
+                        crossover = UnityEngine.Random.Range(0f, 1f);
+                        if (crossover < crossoverRate)
+                        {
+                            newDNA[counter][k] = dna[i][k];
+                        }
+                        else
+                        {
+                            newDNA[counter][k] = dna[j][k];
+                        }
+                    }
+                    counter++;
+                }
+            }
+        }
+
+        for(int i=0; i < dna.Length; i++)
+        {
+            Array.Clear(dna[i], 0, dna[i].Length);
+        }
+        dna = newDNA;
+    }
+
+    void SortDNA() {
+
+        float[] tmpDNA;
+        float tmpFitness;
+
+        for (int i = 0; i < triesNumber; i++) {
+            for (int j = i+1; j < triesNumber; j++) {
+                if (fitnesses[i] < fitnesses[j]) {
+                    //sorting fitnesses
+                    tmpFitness = fitnesses[i];
+                    fitnesses[i] = fitnesses[j];
+                    fitnesses[j] = tmpFitness;
+                    // sorting dna
+                    tmpDNA = dna[i];
+                    dna[i] = dna[j];
+                    dna[j] = tmpDNA;
+                }
+
+            }
+        }
+
+
     }
 
     

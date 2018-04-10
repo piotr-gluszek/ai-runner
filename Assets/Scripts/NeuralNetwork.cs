@@ -244,7 +244,7 @@ namespace NN
         }
 
         public void IncrementFitness() {
-            fitness+=0.01f;
+            fitness+=0.15f;
         }
 
         public float GetFitness() {

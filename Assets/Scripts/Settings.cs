@@ -4,7 +4,7 @@
     public static string SelectedMapPath = "DefaultMap.map";
     public static  bool DnaRandomization = true;
     public static string DnaFilePath = "";
-    public static float MutationRate = 0;
+    public static float MutationRate = 0.1f;
 
 
 }
