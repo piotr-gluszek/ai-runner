@@ -6,6 +6,7 @@ public class CreatorSetup : MonoBehaviour
 {
     // Prefab used to fill the scene with.
     public GameObject block;
+    public GameObject ParentForBlocks;
 
     // Calculation of camera size.
     Vector2 CalculateScreenSizeInWorldCoords()
@@ -34,14 +35,15 @@ public class CreatorSetup : MonoBehaviour
         float camX = CalculateScreenSizeInWorldCoords().x;
         float camY = CalculateScreenSizeInWorldCoords().y;
 
-
+        GameObject currentBlock;
         // Filling scene with blocks in four directions as [0,0] point is in the middle of the scene.
         for (int y = 0; y < camY/sizeY/2; y++)
         {
             for (int x = 0; x < camX/sizeX/2; x++)
             {
-                Instantiate(block, new Vector3(x * sizeX+sizeX/2 , y * sizeY+sizeY/2, 0), Quaternion.identity);
-                
+                currentBlock=Instantiate(block, new Vector3(x * sizeX+sizeX/2 , y * sizeY+sizeY/2, 0), Quaternion.identity);
+                currentBlock.GetComponent<IInitializable>().Initialize(ParentForBlocks);
+
 
             }
         }
@@ -50,8 +52,8 @@ public class CreatorSetup : MonoBehaviour
         {
             for (int x = 0; x < camX / sizeX / 2; x++)
             {
-                Instantiate(block, new Vector3(-(x * sizeX + sizeX / 2),-( y * sizeY + sizeY / 2), 0), Quaternion.identity);
-
+                currentBlock=Instantiate(block, new Vector3(-(x * sizeX + sizeX / 2),-( y * sizeY + sizeY / 2), 0), Quaternion.identity);
+                currentBlock.GetComponent<IInitializable>().Initialize(ParentForBlocks);
 
             }
         }
@@ -60,9 +62,12 @@ public class CreatorSetup : MonoBehaviour
             for (int x = 0; x < camX / sizeX / 2; x++)
             {
                 // Leave room for the Player.
-                if(x * sizeX + sizeX / 2 != 5.5 || -(y * sizeY + sizeY / 2) != -3.50)
-                Instantiate(block, new Vector3(x * sizeX + sizeX / 2, -(y * sizeY + sizeY / 2), 0), Quaternion.identity);
-
+                if (x * sizeX + sizeX / 2 != 5.5 || -(y * sizeY + sizeY / 2) != -3.50)
+                {
+                    currentBlock = Instantiate(block, new Vector3(x * sizeX + sizeX / 2, -(y * sizeY + sizeY / 2), 0),
+                        Quaternion.identity);
+                    currentBlock.GetComponent<IInitializable>().Initialize(ParentForBlocks);
+                }
 
             }
         }
@@ -70,8 +75,8 @@ public class CreatorSetup : MonoBehaviour
         {
             for (int x = 0; x < camX / sizeX / 2; x++)
             {
-                Instantiate(block, new Vector3(-(x * sizeX + sizeX / 2), y * sizeY + sizeY / 2, 0), Quaternion.identity);
-
+                currentBlock=Instantiate(block, new Vector3(-(x * sizeX + sizeX / 2), y * sizeY + sizeY / 2, 0), Quaternion.identity);
+                currentBlock.GetComponent<IInitializable>().Initialize(ParentForBlocks);
 
             }
         }

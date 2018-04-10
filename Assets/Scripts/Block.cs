@@ -3,36 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor.SceneManagement;
 
-public class Block : MonoBehaviour
+public class Block : MonoBehaviour,IInitializable
 {
-    GameObject options;
-    bool optionsActive;
-    
-    private void Start()
-    {
-        options = GameObject.Find("Options/Canvas/Buttons");
-       
-    }
+    ICommunicutable _parentScript;
+    GameObject _parent;
+    bool _initialized = false;
 
+ 
+    public void Initialize(GameObject parent)
+    {
+        _parent = parent;
+        _parentScript = _parent.GetComponent<ICommunicutable>();
+        _initialized = true;
+    }
     private void OnMouseOver()
     {
-        optionsActive = false;
-        // Ignore input if Options are displayed.
-        if (!optionsActive)
-        {
-
-
-            if (Input.GetMouseButton(0))
-                Destroy(this.gameObject);
-            if (Input.GetMouseButton(1))
-            {
-                this.gameObject.tag = "Finish";
-                this.gameObject.GetComponent<SpriteRenderer>().color = Color.green;
-            }
-        }
+        if(_initialized)
+        _parentScript.ProceedData(transform.gameObject);
     }
-
-
-   
-
 }

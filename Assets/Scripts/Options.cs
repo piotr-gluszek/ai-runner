@@ -27,11 +27,27 @@ public class BlockData
 }
 
 
-public class Options : MonoBehaviour
+public class Options : MonoBehaviour,ICommunicutable
 {
 
 
-
+    public void ProceedData(GameObject gameObj)
+    {
+        if (!isActive)
+        {
+            if (Input.GetMouseButton(0))
+            {
+                Destroy(gameObj);
+                Debug.Log("OnMouseOver: destory");
+            }
+            else if (Input.GetMouseButtonDown(1))
+            {
+                gameObj.tag = "Finish";
+                gameObj.GetComponent<SpriteRenderer>().color = Color.green;
+                Debug.Log("OnMouseOver: tag.");
+            }
+        }
+    }
 
     // Game object which will be set active.
    
@@ -198,6 +214,7 @@ public class Options : MonoBehaviour
         foreach (BlockData data in blocksData)
         {
            block=Instantiate(blockPrefab, new Vector3(data.X, data.Y, 0), Quaternion.identity);
+            block.GetComponent<IInitializable>().Initialize(transform.gameObject);
            block.tag = data.tag;
             if (block.tag == "Finish")
             {

@@ -45,7 +45,8 @@ public class Controler : MonoBehaviour {
     List<BlockData> blocksData;
     void Deserialize()
     {
-        string path = EditorUtility.OpenFilePanel("Saved stages", "", "dat");
+        //string path = EditorUtility.OpenFilePanel("Saved stages", "", "dat");
+        string path = Settings.SelectedMapPath;
         FileStream fs = new FileStream(path, FileMode.Open);
         BinaryFormatter formatter = new BinaryFormatter();
 
