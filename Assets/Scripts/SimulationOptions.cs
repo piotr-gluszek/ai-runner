@@ -75,7 +75,14 @@ public class SimulationOptions : MonoBehaviour
     public void ToggleSelectDnaButtonVisibility()
     {
         if (_selectDnaButton.active)
+        {
             _selectDnaButton.SetActive(false);
-        else _selectDnaButton.SetActive(true);
+            SetDnaRandomization(true);
+        }
+        else
+        {
+            _selectDnaButton.SetActive(true);
+            SetDnaRandomization(false);
+        }
     }
 }
