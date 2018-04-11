@@ -169,7 +169,7 @@ namespace NN
                 _output = outputWeights[i] * lastHiddenLayer[i];
             }
             _output *= outputNodeWeight/inputNumber;
-            _output = (float)Math.Tanh(_output)/3;
+            _output = (float)Math.Tanh(_output)/1.5f;
         }
 
         //calculating node sums
@@ -244,7 +244,7 @@ namespace NN
         }
 
         public void IncrementFitness() {
-            fitness+=0.15f;
+            fitness+=0.2f;
         }
 
         public float GetFitness() {

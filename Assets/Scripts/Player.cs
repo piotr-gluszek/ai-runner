@@ -53,7 +53,7 @@ public class Player : MonoBehaviour
         if (brain == null)
             InitializeNeuralNetwork();
 
-            inputText = GameObject.Find("Text").GetComponent<TMP_Text>();
+        inputText = GameObject.Find("Text").GetComponent<TMP_Text>();
         
 
     }
@@ -109,8 +109,10 @@ public class Player : MonoBehaviour
                 // If feelers feel something other than  nothing
                 if (hit.collider != null && hit.collider != collider)
                 {
-                    // Set the input[i] to be the distance of feeler[i]
-                    inputs[i] = hit.distance;
+                    if (hit.collider.tag == "Finish")
+                        inputs[i] = 1000;
+                    else
+                        inputs[i] = hit.distance;
 
                 }
 

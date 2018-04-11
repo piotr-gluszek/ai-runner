@@ -9,6 +9,7 @@ TagManager:
   - Alive
   - inputText
   - Start
+  - finishCollider
   layers:
   - Default
   - TransparentFX
