@@ -22,7 +22,8 @@ public class Controler : MonoBehaviour {
     public int triesNumber;
     public float mutationRate;
     public float crossoverRate;
-    public string dnaFileName="generation0";
+    public string DnaFilePath;
+    public bool dnaRandomizer=false;
     public int dnaLenght;
     public int loadedLenght;
     float[][] dna;//saved DNA for one day; 
@@ -42,6 +43,9 @@ public class Controler : MonoBehaviour {
         startPoint.position = GameObject.FindGameObjectWithTag("Alive").GetComponent<Transform>().position;
         startPoint.rotation = GameObject.FindGameObjectWithTag("Alive").GetComponent<Transform>().rotation;
 
+        if (!dnaRandomizer)
+            dnaRandomizer=!LoadDNA();
+
     }
 
     void LoadSettings()
@@ -49,11 +53,13 @@ public class Controler : MonoBehaviour {
         // Load all options from static class Settings.
         triesNumber = Settings.AttemptNum;
         mutationRate = Settings.MutationRate;
+        crossoverRate = Settings.CrossoverRate;
+        DnaFilePath = Settings.DnaFilePath;
+        dnaRandomizer = Settings.DnaRandomization;
     }
     List<BlockData> blocksData;
     void Deserialize()
     {
-        //string path = EditorUtility.OpenFilePanel("Saved stages", "", "dat");
         string path = Settings.SelectedMapPath;
         FileStream fs = new FileStream(path, FileMode.Open);
         BinaryFormatter formatter = new BinaryFormatter();
@@ -126,15 +132,23 @@ public class Controler : MonoBehaviour {
                 Breed();
                 MutateDNA();
                 Debug.Log("Done breeding");
-                //LoadDNA();
+                
             }
             triesCount++;
             if (child != null)
             {
                 child.GetComponent<Player>().InitializeNeuralNetwork();
                 if (generationCount == 0)
-                    child.GetComponent<Player>().GetNeuralNetwork().SetRandomDNA();
-                else {
+                {
+                    if (dnaRandomizer)
+                        child.GetComponent<Player>().GetNeuralNetwork().SetRandomDNA();
+                    else {
+                        child.GetComponent<Player>().GetNeuralNetwork().SetDNA(dna[triesCount]);
+                     
+                    }
+                }
+                else
+                {
                     child.GetComponent<Player>().GetNeuralNetwork().SetDNA(dna[triesCount]);
                 }
 
@@ -169,7 +183,7 @@ public class Controler : MonoBehaviour {
 
         for(int i=0;i<lenght/2; i++)
         {
-            for(int j=i+1; j < lenght / 2+1; j++)
+            for(int j=i+1; j <lenght/2+1; j++)
             {
                 if (counter < lenght)
                 {
@@ -194,7 +208,10 @@ public class Controler : MonoBehaviour {
         {
             Array.Clear(dna[i], 0, dna[i].Length);
         }
-        dna = newDNA;
+        for (int i = 0; i < dna.Length; i++)
+        {
+            newDNA[i].CopyTo(dna[i],0);
+        };
     }
 
     void SortDNA() {
@@ -257,26 +274,22 @@ public class Controler : MonoBehaviour {
 
     }
 
-    void LoadDNA()
+    bool LoadDNA()
     {
- 
- 
        
-        if (File.Exists("DNA\\" + dnaFileName + ".txt")) {
-            using (StreamReader sr = new StreamReader("DNA\\" + dnaFileName + ".txt"))
+        if (File.Exists(DnaFilePath )) {
+            using (StreamReader sr = new StreamReader(DnaFilePath))
             {
                 for (int i = 0; i < triesNumber; i++) {
                     string tmp = sr.ReadLine();
                     string[] tmpStringTab = tmp.Split(' ');
-                    //test = tmpStringTab[0];
-                    tmpStringTab[0].Replace(",", ".");
                     string test = tmpStringTab[0];
                     float[] tmpFloatTab = new float[tmpStringTab.Length-1];
                     for (int j = 0; j < tmpStringTab.Length-1; j++) {
                         test = tmpStringTab[j];
                         tmpFloatTab[j] =(float)Convert.ToDouble(test, CultureInfo.InvariantCulture);
                     }
-                    dnaLenght = dna[i].Length;
+                    //dnaLenght = dna[i].Length;
                     loadedLenght = tmpFloatTab.Length;
                     if (dna[i] == null)
                         dna[i] = new float[tmpFloatTab.Length];
@@ -285,10 +298,13 @@ public class Controler : MonoBehaviour {
                     sr.ReadLine();
                     sr.ReadLine();
                 }
-
+                Debug.Log("data loaded");
+                return true;
             }
 
         }
+        Debug.Log("error");
+        return false;
         
     }
 
