@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
     public float[] inputs;
     public TMP_Text inputText;
     NeuralNetwork brain;
-
+    public int lifeTime;
     // Components.
     BoxCollider2D collider;
     Animator animator;
@@ -69,6 +69,14 @@ public class Player : MonoBehaviour
         UpdateInputs();
         NeuralNetworkMove();
         NeuralNetworkIncrementFitness();
+        lifeTime++;
+        if (lifeTime > 20000)
+        {
+            Freeze();
+            tag = "Dead";
+            brain.AddToFitness(-200000000);
+        }
+
     }
 
 
@@ -110,7 +118,7 @@ public class Player : MonoBehaviour
                 if (hit.collider != null && hit.collider != collider)
                 {
                     if (hit.collider.tag == "Finish")
-                        inputs[i] = 1000;
+                        inputs[i] = 10;
                     else
                         inputs[i] = hit.distance;
 
@@ -198,6 +206,7 @@ public class Player : MonoBehaviour
         }
         if (collision.gameObject.tag == "Finish")
         {
+            brain.AddToFitness(1000);
             tag = "Dead";
         }
 

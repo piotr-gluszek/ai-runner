@@ -132,7 +132,11 @@ public class Controler : MonoBehaviour {
                 Breed();
                 MutateDNA();
                 Debug.Log("Done breeding");
-                
+                if (mutationRate > 0.05f)
+                {
+                    mutationRate -= 0.01f;
+                }
+
             }
             triesCount++;
             if (child != null)
@@ -167,7 +171,7 @@ public class Controler : MonoBehaviour {
 
     private void CalculateFinalFitness(Vector3 position)
     {
-        fitnesses[triesCount] -= Vector3.Distance(position, finishLine.position);
+        //fitnesses[triesCount] -= Vector3.Distance(position, finishLine.position);
     }
 
 

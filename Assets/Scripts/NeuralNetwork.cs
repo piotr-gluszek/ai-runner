@@ -166,7 +166,7 @@ namespace NN
             _output = 0;
             for (int i = 0; i < inputNumber; i++)
             {
-                _output = outputWeights[i] * lastHiddenLayer[i];
+                _output += outputWeights[i] * lastHiddenLayer[i];
             }
             _output *= outputNodeWeight/inputNumber;
             _output = (float)Math.Tanh(_output)/1.5f;
@@ -245,6 +245,11 @@ namespace NN
 
         public void IncrementFitness() {
             fitness+=0.2f;
+        }
+
+        public void AddToFitness(int i)
+        {
+            fitness+=i;
         }
 
         public float GetFitness() {
